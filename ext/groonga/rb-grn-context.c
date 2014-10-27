@@ -691,6 +691,7 @@ rb_grn_context_support_lzo_p (VALUE self)
 static VALUE
 rb_grn_context_support_lz4_p (VALUE self)
 {
+#ifdef GRN_INFO_SUPPORT_LZ4
     VALUE rb_support_p;
     grn_ctx *context;
     grn_obj support_p;
@@ -702,6 +703,9 @@ rb_grn_context_support_lz4_p (VALUE self)
     GRN_OBJ_FIN(context, &support_p);
 
     return rb_support_p;
+#else
+    return Qfalse;
+#endif
 }
 
 /*
