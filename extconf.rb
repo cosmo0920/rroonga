@@ -19,6 +19,7 @@ require 'English'
 require 'pathname'
 require 'fileutils'
 require 'mkmf'
+require 'shellwords'
 
 base_dir = Pathname(__FILE__).dirname.realpath
 
@@ -53,11 +54,16 @@ File.open("Makefile", "w") do |makefile|
   makefile.puts
   targets = ["all", "clean", "install"]
   targets.each do |target|
+    if RUBY_PLATFORM =~ /win|mingw/
+      make = `where make`.chomp
+    else
+      make = "$(MAKE)"
+    end
     # overriding RUBYARCHDIR and RUBYLIBDIR for RubyGems.
     makefile.puts <<-EOM
 #{target}:
 	cd #{source_ext_dir}; \\
-	  $(MAKE) $(MAKE_ARGS) \\
+	  #{Shellwords.escape(make)} $(MAKE_ARGS) \\
 	    RUBYARCHDIR=$(RUBYARCHDIR) \\
 	    RUBYLIBDIR=$(RUBYLIBDIR) \\
 	    #{target}
